@@ -4,14 +4,10 @@ from crawling.util.crawling_estate import *
 from crawling.util.crawling_stock_trend import *
 from crawling.util.crawling_stock_detail import *
 from crawling.util.crawling_stock_draw import *
-
 import json
 
-# Create your views here.
 
 # 부동산정보
-
-
 def crawl_estate(request):
     data = request.body.decode('utf-8')
     location = json.loads(data)['location']
@@ -32,6 +28,7 @@ def crawl_stock_trend(request):
     return JsonResponse({"stocks_trend": stocks_trend})
 
 
+# 주식 상세정보
 def crawl_stock_detail(request):
     data = request.body.decode('utf-8')
     stock_name = json.loads(data)['stock_name']
@@ -43,6 +40,7 @@ def crawl_stock_detail(request):
     return JsonResponse({"stock_detail": [stock_detail]})
 
 
+# 주식 그려주기
 def crawl_stock_draw(request):
     data = request.body.decode('utf-8')
     stock_name = json.loads(data)['stock_name']
