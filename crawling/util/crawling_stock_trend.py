@@ -61,6 +61,8 @@ def get_sise_market_sum(sosok, page):
 def crawl(sosok, pages):
     result = []
     for page in range(1, pages):
+        print("여기ㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣㅣ")
         stock_list = get_sise_market_sum(sosok, page)
+        print(stock_list, "스톡리스트")
         result += stock_list
     return result
