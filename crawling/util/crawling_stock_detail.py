@@ -1,4 +1,3 @@
-# # "https://finance.naver.com/item/sise.nhn?code=051910"
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -69,11 +68,3 @@ def parse(page_string):
 def get_data_from_url(url):
     data = requests.get(url)
     return data.content
-
-
-def crawl_detail():
-    code = "051910"
-    string_page = get_data_from_url(
-        f"https://finance.naver.com/item/sise.nhn?code={code}")
-    stock_detail = parse(string_page)
-    return stock_detail

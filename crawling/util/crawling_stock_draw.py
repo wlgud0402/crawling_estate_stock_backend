@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def crawl(inputStockName):
+def crawl_draw(inputStockName):
     company = inputStockName.upper()
     header = {
         'User-Agent': 'Mozilla/5.0 (MacintoshIntel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36',

@@ -13,10 +13,23 @@ class Estate(models.Model):
     def __str__(self):
         return self.location
 
-    # def save(self, *args, **kwargs):
-    #     cache.delete(self.location)
-    #     super().save(*args, **kwargs)
 
-    # def delete(self, *args, **kwargs):
-    #     cache.delete(self.location)
-    #     super().delete(*args, **kwargs)
+class StockTrend(models.Model):
+    sosok = models.CharField("코스피 / 코스닥", max_length=254)
+    page = models.IntegerField("페이지수")
+    trend_data = models.JSONField("주식트랜드", null=True, blank=True)
+    create_at = models.DateTimeField("생성시간", auto_now_add=True)
+    modified_at = models.DateTimeField("수정시간", auto_now=True)
+
+    def __str__(self):
+        return self.sosok
+
+
+class StockDetail(models.Model):
+    stock_name = models.CharField("주식이름", max_length=254)
+    detail_data = models.JSONField("주식트랜드", null=True, blank=True)
+    create_at = models.DateTimeField("생성시간", auto_now_add=True)
+    modified_at = models.DateTimeField("수정시간", auto_now=True)
+
+    def __str__(self):
+        return self.stock_name
