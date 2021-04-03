@@ -63,13 +63,11 @@ def crawl_stock_trend(request):
                 stock.page = page
                 stock.trend_data = stocks_trend
                 stock.save()
-
             # 캐시에 없고 처음 삽입되는 데이터입니다.
             else:
                 stock = StockTrend(sosok=sosok, page=page,
                                    trend_data=stocks_trend)
                 stock.save()
-
             # 캐시 셋팅
             set_cache_data = cache.set(
                 "trend" + sosok + str(page), stocks_trend, 30)
@@ -91,8 +89,7 @@ def crawl_stock_detail(request):
             string_page = get_data_from_url(
                 f"https://finance.naver.com/item/sise.nhn?code={stock_code}")
             stock_detail = parse(string_page)
-            stock_detail['stock_name'] = stock_name
-
+            # stock_detail['stock_name'] = stock_name
             if StockDetail.objects.filter(stock_name=stock_name).count() != 0:
                 stock = StockDetail.objects.get(stock_name=stock_name)
                 stock.detail_data = stock_detail
