@@ -16,7 +16,6 @@ class UserAPI(APIView):
             google_id=google_id,
             email=email,
             nickname=nickname)
-        print("만들어짐?", created, user)
 
         # jwt token response
         user_token = jwt.encode(

@@ -6,6 +6,11 @@ from .serializers import PostSerializer, PostOnlySerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.core.paginator import Paginator
+import jwt
+import math
+from user.models import User
+
+one_page_board = 15
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -23,17 +28,15 @@ class PostListAPI(ListAPIView):
 class PostAPI(APIView):
     def get(self, request, format=None):
         queryset = Post.objects.all()
+        page_count = math.ceil(len(queryset)/one_page_board)
+        page_count = [i+1 for i in range(page_count)]
         now_page = self.request.query_params.get('page', 1)  # 현재 페이지
         # page_size = self.request.query_params.get('page_size', 2)  # 한 페이지당
 
-        paginator = Paginator(queryset, 3)
+        paginator = Paginator(queryset, one_page_board)
         serializer = PostOnlySerializer(paginator.page(
             now_page), many=True, context={'request': request})
-        return Response(serializer.data)
-    # def get(self, request, format=None):
-    #     queryset = Post.objects.all()
-    #     serializer = PostOnlySerializer(queryset, many=True)
-    #     return Response(serializer.data)
+        return Response({"boards": serializer.data, "page_count": page_count})
 
 
 class PostDetailAPI(APIView):
@@ -50,3 +53,23 @@ class PostDetailAPI(APIView):
 
     def delete(self, request, pk, format=None):
         pass
+
+    def post(self, request, pk, format=None):
+        pass
+
+
+class CommentAPI(APIView):
+    def post(self, request):
+        try:
+            post_id = request.data.get("board_id")
+            post = Post.objects.get(id=post_id)
+            encoded_jwt = request.data.get("token")
+            content = request.data.get("content")
+            user_token = jwt.decode(
+                encoded_jwt, "secret", algorithms=["HS256"])
+            user = User.objects.get(id=user_token.get('id'))
+            comment = Comment(user=user, post=post, content=content)
+            comment.save()
+            return Response({"msg": "댓글이 등록되었습니다."})
+        except:
+            return Response({"msg": "에러가 발생했습니다. 로그인을 다시 진행해 주세요."})
