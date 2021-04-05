@@ -39,7 +39,8 @@ def crawl_estate(request):
                 estate.save()
 
             # 캐시 셋팅
-            set_cache_data = cache.set("estate"+location, all_danji_resp, 30)
+            set_cache_data = cache.set(
+                "estate"+location, all_danji_resp, 60*60)
         except:
             return JsonResponse({"msg": "데이터가 존재하지 않습니다."})
 
@@ -70,7 +71,7 @@ def crawl_stock_trend(request):
                 stock.save()
             # 캐시 셋팅
             set_cache_data = cache.set(
-                "trend" + sosok + str(page), stocks_trend, 30)
+                "trend" + sosok + str(page), stocks_trend, 60*60)
         except:
             return JsonResponse({"msg": "데이터가 존재하지 않습니다."})
     trend_data = cache.get("trend" + sosok + str(page))
@@ -101,7 +102,7 @@ def crawl_stock_detail(request):
                                     detail_data=stock_detail)
                 stock.save()
             set_cache_data = cache.set(
-                "detail"+stock_name, stock_detail, 30)
+                "detail"+stock_name, stock_detail, 60*60)
         except:
             return JsonResponse({"msg": "데이터가 존재하지 않습니다."})
 

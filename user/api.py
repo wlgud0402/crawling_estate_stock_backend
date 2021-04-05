@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from .models import User
-from .serializers import UserSerializer
+from post.models import Post, Comment
+from .serializers import UserSerializer, UserInfoSerializer
 from django.http import JsonResponse
+from rest_framework.response import Response
 import jwt
 import json
 
@@ -23,4 +25,30 @@ class UserAPI(APIView):
             "secret", algorithm="HS256")
         return JsonResponse({
             'user_token': user_token
+        })
+
+
+class UserDeleteAPI(APIView):
+    def post(self, request, format=None):
+        try:
+            encoded_jwt = request.data.get("token")
+            user_token = jwt.decode(
+                encoded_jwt, "secret", algorithms=["HS256"])
+            user = User.objects.get(id=user_token.get('id'))
+            user.delete()
+            return JsonResponse({"msg": "회원탈퇴가 완료되었습니다."})
+        except:
+            return JsonResponse({"msg": "권한이 없습니다. 로그인을 다시 진행해주세요."})
+
+
+class UserInfoAPI(APIView):
+    # 내정보 + 내가쓴글 + 내가쓴 댓글
+    def post(self, request, format=None):
+        encoded_jwt = request.data.get("user_token")
+        user_token = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
+        user = User.objects.get(id=user_token.get('id'))
+        # print(user.comments.all().values())
+        serializer = UserInfoSerializer(user)
+        return JsonResponse({
+            'userInfos': serializer.data
         })

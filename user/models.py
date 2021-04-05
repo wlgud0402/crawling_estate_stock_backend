@@ -7,7 +7,7 @@ class User(models.Model):
     email = models.EmailField(
         ("사용자 이메일"), max_length=254)
     nickname = models.CharField(("닉네임"), max_length=254)
-    use_count = models.IntegerField(("방번호"), null=True, default=0)
+    use_count = models.IntegerField(("사용횟수"), null=True, default=0)
     created_at = models.DateTimeField(("가입일"), auto_now_add=True)
 
     def __str__(self):
