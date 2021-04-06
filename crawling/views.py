@@ -8,18 +8,35 @@ from .models import Estate, StockTrend, StockDetail
 from django.core.cache import cache
 import json
 import timeit
+import datetime
+
 # start = timeit.default_timer()
 # stop = timeit.default_timer()
 # print("실제 걸리는 시간 차이", stop - start)
 
+# 부동산정보 # 캐싱과 논캐싱의 시간차이 (0.357 vs 0.006)
 
-# 부동산정보 # 캐싱과 논캐싱의 시간차이 (1.016 vs 0.003)
+
 def crawl_estate(request):
     data = request.body.decode('utf-8')
     location = json.loads(data)['location']
+    time_diff = 0
 
-    # 캐싱되어있지 않는 경우
-    if not cache.get("estate"+location):
+    # 계속 캐싱이 되는 경우 데이터를 갱신하지 않으므로
+    # 마지막 수정시간과 현재시간의 차이를 구해서 그값을 기준으로 새로 데이터를 가져옴
+    if Estate.objects.filter(location=location).exists():
+        estate = Estate.objects.get(location=location)
+        now = datetime.datetime.now()
+        updated = estate.modified_at
+
+        now_ = datetime.datetime.strptime(
+            now.strftime('%H:%M:%S'), '%H:%M:%S')
+        updated_ = datetime.datetime.strptime(
+            updated.strftime('%H:%M:%S'), '%H:%M:%S')
+        time_diff = ((now_ - updated_).seconds)/3600
+
+   # 캐싱되어있지 않는 경우
+    if not cache.get("estate"+location) or time_diff > 1:
         try:
             location_url = util_crawling_start(location)
             search_url, extra_condition = get_location_condition(location_url)
@@ -43,7 +60,6 @@ def crawl_estate(request):
                 "estate"+location, all_danji_resp, 60*60)
         except:
             return JsonResponse({"msg": "데이터가 존재하지 않습니다."})
-
     get_data = cache.get("estate"+location)
     return JsonResponse({"all_danji_resp": get_data})
 
@@ -53,7 +69,21 @@ def crawl_stock_trend(request):
     data = request.body.decode('utf-8')
     sosok = json.loads(data)['sosok']
     page = int(json.loads(data)['page'])
-    if not cache.get("trend" + sosok + str(page)):
+    time_diff = 0
+
+    if StockTrend.objects.filter(sosok=sosok).filter(page=page).exists():
+        stock = StockTrend.objects.filter(
+            sosok=sosok).get(page=page)
+        now = datetime.datetime.now()
+        updated = stock.modified_at
+
+        now_ = datetime.datetime.strptime(
+            now.strftime('%H:%M:%S'), '%H:%M:%S')
+        updated_ = datetime.datetime.strptime(
+            updated.strftime('%H:%M:%S'), '%H:%M:%S')
+        time_diff = ((now_ - updated_).seconds)/3600
+
+    if not cache.get("trend" + sosok + str(page)) or time_diff > 1:
         try:
             stocks_trend = crawl_stock(sosok, page)
             # 캐시에 없지만 db에는 데이터가 있습니다.
@@ -82,6 +112,18 @@ def crawl_stock_trend(request):
 def crawl_stock_detail(request):
     data = request.body.decode('utf-8')
     stock_name = json.loads(data)['stock_name']
+    time_diff = 0
+
+    if StockDetail.objects.filter(stock_name=stock_name).exists() or time_diff > 1:
+        stock = StockDetail.objects.get(stock_name=stock_name)
+        now = datetime.datetime.now()
+        updated = stock.modified_at
+
+        now_ = datetime.datetime.strptime(
+            now.strftime('%H:%M:%S'), '%H:%M:%S')
+        updated_ = datetime.datetime.strptime(
+            updated.strftime('%H:%M:%S'), '%H:%M:%S')
+        time_diff = ((now_ - updated_).seconds)/3600
 
     # 캐시에 없음
     if not cache.get("detail" + stock_name):
