@@ -1,8 +1,7 @@
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from .models import Post, Comment
-from .serializers import PostSerializer, PostOnlySerializer
+from .serializers import PostSerializer, PostOnlySerializer, CommentSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.core.paginator import Paginator
@@ -20,12 +19,6 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 3
 
 
-class PostListAPI(ListAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    pagination_class = StandardResultsSetPagination
-
-
 class PostAPI(APIView):
     def get(self, request, format=None):
         queryset = Post.objects.all()
@@ -41,7 +34,7 @@ class PostAPI(APIView):
 
     def post(self, request, format=None):
         try:
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             title = request.data.get('title')
             text = request.data.get('text')
             user_token = jwt.decode(
@@ -65,7 +58,7 @@ class PostDetailAPI(APIView):
     # 게시글 수정
     def put(self, request, pk):
         try:
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             user_token = jwt.decode(
                 encoded_jwt, "secret", algorithms=["HS256"])
             user = User.objects.get(id=user_token.get('id'))
@@ -82,13 +75,13 @@ class PostDetailAPI(APIView):
             return JsonResponse({"msg": "권한이 없습니다."})
     # 삭제
 
-    def post(self, request, pk):
+    def delete(self, request, pk):
         try:
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             user_token = jwt.decode(
                 encoded_jwt, "secret", algorithms=["HS256"])
             user = User.objects.get(id=user_token.get('id'))
-            post = Post.objects.get(pk=request.data.get("post_id"))
+            post = Post.objects.get(pk=pk)
             if post.user.id == user.id:
                 post.delete()
                 return JsonResponse({"msg": "글이 삭제되었습니다.."})
@@ -103,7 +96,7 @@ class CommentAPI(APIView):
         try:
             post_id = request.data.get("board_id")
             post = Post.objects.get(id=post_id)
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             content = request.data.get("content")
             user_token = jwt.decode(
                 encoded_jwt, "secret", algorithms=["HS256"])
@@ -114,21 +107,41 @@ class CommentAPI(APIView):
         except:
             return Response({"msg": "에러가 발생했습니다. 로그인을 다시 진행해 주세요."})
 
-
-class CommentDeleteAPI(APIView):
-    def post(self, request, format=None):
+    def delete(self, request, pk):
         try:
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             user_token = jwt.decode(
                 encoded_jwt, "secret", algorithms=["HS256"])
             user = User.objects.get(id=user_token.get('id'))
-            comment_id = request.data.get("comment_id")
-            comment = Comment.objects.get(id=comment_id)
-
+            comment = Comment.objects.get(id=pk)
             if user.id == comment.user.id:
                 comment.delete()
                 return JsonResponse({"msg": "댓글이 삭제 되었습니다."})
             else:
                 return JsonResponse({"msg": "권한이 없습니다. 로그인을 다시 진행해주세요."})
         except:
-            return JsonResponse({"msg": "권한이 없습니다. 로그인을 다시 진행해주세요."})
+            return JsonResponse({"msg": "댓글이 삭제 되었습니다."})
+
+    def get(self, request, pk):
+        comment_obj = Comment.objects.get(pk=pk)
+        post_obj = comment_obj.post
+        comment = CommentSerializer(comment_obj)
+        post = PostOnlySerializer(post_obj)
+        return JsonResponse({"comment": comment.data, "post": post.data})
+
+    def put(self, request, pk):
+        try:
+            encoded_jwt = request.META.get('HTTP_TOKEN')
+            user_token = jwt.decode(
+                encoded_jwt, "secret", algorithms=["HS256"])
+            user = User.objects.get(id=user_token.get('id'))
+            comment = Comment.objects.get(pk=pk)
+
+            if user.id == comment.user.id:
+                comment.content = request.data.get('content')
+                comment.save()
+                return JsonResponse({"msg": "댓글이 수정되었습니다."})
+            else:
+                return JsonResponse({"msg": "권한이 없습니다."})
+        except:
+            return JsonResponse({"msg": "권한이 없습니다."})

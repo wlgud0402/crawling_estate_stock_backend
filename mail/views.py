@@ -13,7 +13,7 @@ def send_mail_estate(request):
     # 받은 데이터
     try:
         data = request.body.decode('utf-8')
-        encoded_jwt = json.loads(data)['token']
+        encoded_jwt = request.META.get('HTTP_TOKEN')
         location = json.loads(data)['location']
         estate_json_data = json.loads(data)['data']
         user_token = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
@@ -110,7 +110,7 @@ def send_mail_estate(request):
 def send_mail_stock(request):
     try:
         data = request.body.decode('utf-8')
-        encoded_jwt = json.loads(data)['token']
+        encoded_jwt = request.META.get('HTTP_TOKEN')
         user_token = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
         user = User.objects.get(id=user_token.get('id'))
 
@@ -193,7 +193,7 @@ def send_mail_stock(request):
 def send_mail_stock_detail(request):
     try:
         data = request.body.decode('utf-8')
-        encoded_jwt = json.loads(data)['token']
+        encoded_jwt = request.META.get('HTTP_TOKEN')
         user_token = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
         user = User.objects.get(id=user_token.get('id'))
 

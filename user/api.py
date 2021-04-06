@@ -27,11 +27,9 @@ class UserAPI(APIView):
             'user_token': user_token
         })
 
-
-class UserDeleteAPI(APIView):
-    def post(self, request, format=None):
+    def delete(self, request, format=None):
         try:
-            encoded_jwt = request.data.get("token")
+            encoded_jwt = request.META.get('HTTP_TOKEN')
             user_token = jwt.decode(
                 encoded_jwt, "secret", algorithms=["HS256"])
             user = User.objects.get(id=user_token.get('id'))
@@ -43,11 +41,10 @@ class UserDeleteAPI(APIView):
 
 class UserInfoAPI(APIView):
     # 내정보 + 내가쓴글 + 내가쓴 댓글
-    def post(self, request, format=None):
-        encoded_jwt = request.data.get("user_token")
+    def get(self, request, format=None):
+        encoded_jwt = request.META.get('HTTP_TOKEN')
         user_token = jwt.decode(encoded_jwt, "secret", algorithms=["HS256"])
         user = User.objects.get(id=user_token.get('id'))
-        # print(user.comments.all().values())
         serializer = UserInfoSerializer(user)
         return JsonResponse({
             'userInfos': serializer.data
