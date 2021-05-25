@@ -1,14 +1,5 @@
-from django.template import Context
-from openpyxl import Workbook
-
-from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-
-#
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
 

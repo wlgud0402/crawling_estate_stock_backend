@@ -1,15 +1,10 @@
 from django.http import JsonResponse
 from django.http import HttpResponse
-import json
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
-from openpyxl import Workbook
-import jwt
 from user.models import User
 from mail.tasks import send_estate_task, send_stock_detail_task, send_stock_task
 from .utils import json_estate_to_xlsx, json_stock_detail_to_xlsx, json_stock_to_xlsx
+import json
+import jwt
 
 
 def send_mail_estate_by_celery(request):

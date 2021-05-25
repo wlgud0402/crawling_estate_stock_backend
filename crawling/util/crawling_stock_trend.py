@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-# from openpyxl import Workbook
 
 
 def get_data_from_url(url):
