@@ -9,7 +9,6 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'nickname', 'content', 'created_at',)
-        # fields = '__all__'
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -22,7 +21,6 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ('id', 'user_nickname', 'title',
                   'text', 'created_at', 'comments',)
-        # related_name='comments'
 
 
 class PostOnlySerializer(serializers.ModelSerializer):

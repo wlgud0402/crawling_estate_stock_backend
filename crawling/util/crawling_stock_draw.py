@@ -59,4 +59,3 @@ def crawl_draw(inputStockName):
         )
     )
     fig.show()
-# fig.write_html("ew.html")

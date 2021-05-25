@@ -8,8 +8,6 @@ def util_crawling_start(location):
     location_url = f"https://m.land.naver.com/search/result/{location}"
     return location_url
 
-# https://m.land.naver.com/search/result/구로구 구로동 에러
-
 
 def get_location_condition(location_url):
     header = {
@@ -28,7 +26,6 @@ def get_location_condition(location_url):
     z = condition.split(",")[2].split("\'")[1]
     cortarNo = condition.split(",")[3].split("\'")[1]
 
-    # 나중에 입력받는걸로 변경도 가능하다.
     search_type = "APT"
     building_type = "A1:B1:B2"
 

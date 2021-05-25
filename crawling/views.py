@@ -13,10 +13,10 @@ import datetime
 # start = timeit.default_timer()
 # stop = timeit.default_timer()
 # print("실제 걸리는 시간 차이", stop - start)
+# 캐싱을 통해 약 150배 이상 속도 개선
 
-# 부동산정보 # 캐싱과 논캐싱의 시간차이 (0.357 vs 0.006)
 
-
+# 부동산정보 # 캐싱과 논캐싱의 시간차이 (0.357 vs 0.006) 약60배
 def crawl_estate(request):
     data = request.body.decode('utf-8')
     location = json.loads(data)['location']
@@ -64,7 +64,7 @@ def crawl_estate(request):
     return JsonResponse({"all_danji_resp": get_data})
 
 
-# 주식 트렌드 #캐싱과 논캐싱의 시간차이 (0.84 vs 0.0008)
+# 주식 트렌드 #캐싱과 논캐싱의 시간차이 (1.40 vs 0.009) 155배
 def crawl_stock_trend(request):
     data = request.body.decode('utf-8')
     sosok = json.loads(data)['sosok']
@@ -108,7 +108,7 @@ def crawl_stock_trend(request):
     return JsonResponse({"stocks_trend": trend_data})
 
 
-# 주식 상세정보 #캐싱과 논캐싱의 시간차이 (2.10 vs 0.0018)
+# 주식 상세정보 #캐싱과 논캐싱의 시간차이 (2.32 vs 0.008) 290배
 def crawl_stock_detail(request):
     data = request.body.decode('utf-8')
     stock_name = json.loads(data)['stock_name']
@@ -147,7 +147,6 @@ def crawl_stock_detail(request):
                 "detail"+stock_name, stock_detail, 60*60)
         except:
             return JsonResponse({"msg": "데이터가 존재하지 않습니다."})
-
     get_data = cache.get("detail"+stock_name)
     return JsonResponse({"stock_detail": [get_data]})
 
