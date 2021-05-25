@@ -15,6 +15,8 @@ Github Frontend : https://github.com/wlgud0402/crawling_estate_stock_frontend
 
 <img width="1463" alt="메일" src="https://user-images.githubusercontent.com/61821825/113748175-24be8200-9743-11eb-8a98-c4c6cfd8bf44.png">
 
+<img width="1751" alt="모니터큐 2021-05-26 오전 12 05 13" src="https://user-images.githubusercontent.com/61821825/119526697-923d7500-bdba-11eb-8d9e-81e37a2632b5.png">
+<img width="1184" alt="모니터링 2021-05-26 오전 12 30 45" src="https://user-images.githubusercontent.com/61821825/119527486-52c35880-bdbb-11eb-9d5c-a9adbb0aab72.png">
 <img width="1781" alt="상세" src="https://user-images.githubusercontent.com/61821825/113748172-2425eb80-9743-11eb-98ad-61c5631b4a89.png">
 
 <img width="1762" alt="주식그래프" src="https://user-images.githubusercontent.com/61821825/113748168-2425eb80-9743-11eb-8295-cd05d859f893.png">
